@@ -23,41 +23,42 @@ const HomePage = () => {
     function LinkCard() {
         return (
             <Box>
-                <Card width="200" boxShadow="xl" style={{ backgroundColor: 'rgb(190, 219, 245)' }}>
-                    <CardBody>
-                        <Spacer height='25px'></Spacer>
-                        <Flex spacing="4">
-                            <Input placeholder='Original/Snap Link Url' backgroundColor="white"/>
-                            <Box width='20px'></Box>
-                            <Button variant='solid' style={{
-                                maxWidth: '100%', // Ensure the button does not exceed its container width
-                                textOverflow: 'ellipsis', // Adds an ellipsis (...) to text that overflows
-                                whiteSpace: 'nowrap' // Keeps the text on a single line
-                            }} width='200px'>
-                                Customized
-                            </Button>
-                            <Box width='20px'></Box>
-                            <Box style={{display: 'flex'}}>
-                                <Button colorScheme={"whatsapp"}>Generate</Button>
-                            </Box>
-                        </Flex>
-                        <Spacer height='23px'></Spacer>
-                        {/*<Divider/>*/}
-                        <Flex spacing="4">
-                            <Input placeholder='Original/Snap Link Url' backgroundColor="white"/>
-                            <Box width='20px'></Box>
-                            <Box style={{display: 'flex'}}>
-                                <Button colorScheme={"whatsapp"}>Copy</Button>
-                            </Box>
-                        </Flex>
-                        <Spacer height='25px'></Spacer>
-                    </CardBody>
+                <Card width="200" boxShadow="xl" w="620px" style={{ backgroundColor: 'rgb(190, 219, 245)' }} rounded='2xl'>
+                    <HStack>
+                        <Box width="14px"></Box>
+                        <CardBody>
+                            <Spacer height='25px'></Spacer>
+                            <Flex spacing="4">
+                                <VStack spacing="18px">
+                                    <HStack>
+                                        <Input placeholder='Original/Snap Link Url' backgroundColor="white"/>
+                                        <Input variant='solid' style={{
+                                            maxWidth: '100%', // Ensure the button does not exceed its container width
+                                            textOverflow: 'ellipsis', // Adds an ellipsis (...) to text that overflows
+                                            whiteSpace: 'nowrap' // Keeps the text on a single line
+                                        }} width='200px' placeholder="Customized"/>
+                                    </HStack>
+                                    <Input placeholder='Original/Snap Link Url' backgroundColor="white"/>
+                                </VStack>
+                                <Box width='20px'></Box>
+                                <VStack spacing="18px">
+                                    <Box style={{display: 'flex'}}>
+                                        <Button style={{ width: '100px' }} colorScheme={"whatsapp"}>Generate</Button>
+                                    </Box>
+                                    <Box style={{display: 'flex'}}>
+                                        <Button style={{ width: '100px' }} colorScheme={"whatsapp"}>Copy</Button>
+                                    </Box>
+                                </VStack>
+                            </Flex>
+                            <Spacer height='25px'></Spacer>
+                        </CardBody>
+                    </HStack>
                 </Card>
             </Box>
         )
     }
 
-    function Header() {
+    function Footer() {
         return (
             <Box>
                 <Flex
@@ -74,6 +75,28 @@ const HomePage = () => {
                     alignItems={"center"}
                     justifyItems={"center"}>
                     <Spacer />
+                </Flex>
+            </Box>
+        )
+    }
+
+    function Header() {
+        return (
+            <Box>
+                <Flex
+                    style={{backgroundColor: 'rgb(190, 219, 245)'}}
+                    bg={"gray.200"}
+                    color={"white"}
+                    minH={'68px'}
+                    h={50}
+                    py={{base: 2}}
+                    px={{base: 4}}
+                    borderBottom={1}
+                    borderStyle={'solid'}
+                    borderColor={"gray.300"}
+                    alignItems={"center"}
+                    justifyItems={"center"}>
+                    <Spacer/>
                     <Button colorScheme="whatsapp">Login</Button>
                 </Flex>
             </Box>
@@ -82,17 +105,20 @@ const HomePage = () => {
 
     return (
         <div>
+            <Box style={{ backgroundColor: 'rgb(245, 245, 245)' }}>
             <Header/>
             <div className="Container">
                 <VStack>
                     <Flex spacing="4">
-                        <Box>
-                            <Image src="/snaplink_logo_small.png" height="145"></Image>
+                        <Box mt="-50px">
+                            <Image src="/snaplink_logo_no_background.png" height="145"></Image>
                         </Box>
                     </Flex>
                     <LinkCard/>
                 </VStack>
             </div>
+            </Box>
+            <Footer/>
         </div>
     );
 }
