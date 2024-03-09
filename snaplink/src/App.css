@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  height: 100dvh;
 }
 
 .App-logo {
@@ -14,18 +15,18 @@
 }
 
 /*For macbook screen*/
-@media (max-height: 823px) {
-  .Container {
-    height: 85.4vh; /* Slightly less height */
-  }
-}
+/*@media (max-height: 823px) {*/
+/*  .Container {*/
+/*    height: 85.4vh; !* Slightly less height *!*/
+/*  }*/
+/*}*/
 
-/*For larger screen*/
-@media (min-height: 1294px) {
-  .Container {
-    height: 90.7vh; /* Full screen height */
-  }
-}
+/*!*For larger screen*!*/
+/*@media (min-height: 1294px) {*/
+/*  .Container {*/
+/*    height: 90.7vh; !* Full screen height *!*/
+/*  }*/
+/*}*/
 
 .App-header {
   background-color: #282c34;
@@ -61,5 +62,5 @@
   justify-content: center;
   align-items: center;
   width: 100vw;
-  /*height: 90vh;*/
+  height: 100vh;
 }
