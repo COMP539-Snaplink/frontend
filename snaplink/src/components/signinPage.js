@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import {useLocation, useNavigate} from "react-router-dom";
+import {FcGoogle} from "react-icons/fc";
+
 
 // import './homePage.css';
 // import '../App.css';
@@ -31,11 +33,13 @@ const SigninPage = () => {
                             <Spacer height='25px'></Spacer>
                             <Flex spacing="4">
                                 <VStack spacing="18px" flex={1}>
-                                    <Input maxWidth={"400px"} placeholder='Username' backgroundColor="white"/>
-                                    <Input maxWidth={"400px"} placeholder='Password' backgroundColor="white"/>
-                                    {/*<Box style={{display: 'flex'}}>*/}
-                                    <Button style={{ width: '160px' }} colorScheme={"whatsapp"} >Register / Login</Button>
-                                    {/*</Box>*/}
+                                    <Input maxWidth={"400px"} placeholder='Username' backgroundColor="white" borderColor={"black"}/>
+                                    <Input maxWidth={"400px"} placeholder='Password' backgroundColor="white" borderColor={"black"} type={"password"}/>
+                                    <Flex>
+                                        <Button style={{ width: '160px' }} colorScheme={"whatsapp"} >Register / Login</Button>
+                                        <Spacer width={"10px"}/>
+                                        <Button leftIcon={<FcGoogle />}> Login With Google </Button>
+                                    </Flex>
                                 </VStack>
                             </Flex>
                             <Spacer height='12px'></Spacer>

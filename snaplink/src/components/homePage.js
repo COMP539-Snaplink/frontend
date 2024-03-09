@@ -33,14 +33,10 @@ const HomePage = () => {
                             <Flex spacing="4">
                                 <VStack spacing="18px">
                                     <HStack>
-                                        <Input placeholder='Original/Snap Link Url' backgroundColor="white"/>
-                                        <Input variant='solid' style={{
-                                            maxWidth: '100%', // Ensure the button does not exceed its container width
-                                            textOverflow: 'ellipsis', // Adds an ellipsis (...) to text that overflows
-                                            whiteSpace: 'nowrap' // Keeps the text on a single line
-                                        }} width='200px' placeholder="Customized"/>
+                                        <Input placeholder='Original/Snap Link Url' backgroundColor="white" borderColor={"black"}/>
+                                        <Input width='200px' placeholder="Customized" disabled={true} borderColor={"black"}/>
                                     </HStack>
-                                    <Input placeholder='Original/Snap Link Url' backgroundColor="white"/>
+                                    <Input placeholder='Original/Snap Link Url' backgroundColor="white" borderColor={"black"}/>
                                 </VStack>
                                 <Box width='20px'></Box>
                                 <VStack spacing="18px">
