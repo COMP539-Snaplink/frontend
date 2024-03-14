@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import {useLocation, useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // import './homePage.css';
 // import '../App.css';
-import {Box, Card, Flex, Input, HStack, Image, VStack, CardBody, Button, Spacer, Text} from "@chakra-ui/react";
-import {EditIcon} from '@chakra-ui/icons';
+import { Box, Card, Flex, Input, HStack, Image, VStack, CardBody, Button, Spacer, Text } from "@chakra-ui/react";
+import { EditIcon } from '@chakra-ui/icons';
 
 const HomePage = () => {
     const [inputUrl, setInputUrl] = useState('');
@@ -33,17 +33,17 @@ const HomePage = () => {
                             <Flex spacing="4">
                                 <VStack spacing="18px">
                                     <HStack>
-                                        <Input placeholder='Original/Snap Link Url' backgroundColor="white" borderColor={"black"}/>
-                                        <Input width='200px' placeholder="Customized" disabled={true} borderColor={"black"}/>
+                                        <Input placeholder='Original/Snap Link Url' backgroundColor="white" borderColor={"black"} />
+                                        <Input width='200px' placeholder="Customized" disabled={true} borderColor={"black"} />
                                     </HStack>
-                                    <Input placeholder='Original/Snap Link Url' backgroundColor="white" borderColor={"black"}/>
+                                    <Input placeholder='Original/Snap Link Url' backgroundColor="white" borderColor={"black"} />
                                 </VStack>
                                 <Box width='20px'></Box>
                                 <VStack spacing="18px">
-                                    <Box style={{display: 'flex'}}>
+                                    <Box style={{ display: 'flex' }}>
                                         <Button style={{ width: '100px' }} colorScheme={"whatsapp"}>Generate</Button>
                                     </Box>
-                                    <Box style={{display: 'flex'}}>
+                                    <Box style={{ display: 'flex' }}>
                                         <Button style={{ width: '100px' }} colorScheme={"whatsapp"}>Copy</Button>
                                     </Box>
                                 </VStack>
@@ -84,36 +84,46 @@ const HomePage = () => {
     }
 
     function Header() {
+        const navigate = useNavigate();
+        const isLoggedIn = localStorage.getItem('isLoggedin') === 'true';
+
+        const handleLogout = () => {
+            localStorage.removeItem('isLoggedin'); // Remove the flag from local storage
+            navigate('/'); // Optionally refresh the page or navigate as needed
+        };
+
         return (
-            <Flex display={"flex"} flex={1}>
-                <Flex style={{backgroundColor: 'rgb(190, 219, 245)'}}
-                      minH={'80px'} flex={1} w="100vw"
-                      position="fixed" top={0} left={0} right={0}
-                      alignItems={"center"}
-                      justifyContent={"flex-end"}
-                      px={4}>
-                    <Button colorScheme="whatsapp" onClick={() => {navigate("/login");}}>Login</Button>
-                </Flex>
+            <Flex style={{ backgroundColor: 'rgb(190, 219, 245)' }} minH={'80px'} flex={1} w="100vw"
+                position="fixed" top={0} left={0} right={0} alignItems={"center"} justifyContent={"flex-end"} px={4}>
+                {isLoggedIn ? (
+                    <>
+                        <Button colorScheme="blue" onClick={() => navigate("/advanced")}>Advanced</Button>
+                        <Button colorScheme="red" onClick={handleLogout} ml={4}>Logout</Button>
+                    </>
+                ) : (
+                    <Button colorScheme="whatsapp" onClick={() => navigate("/login")}>Login</Button>
+                )}
             </Flex>
-        )
+        );
     }
+
 
     return (
         <div>
             <Box style={{ backgroundColor: 'rgb(245, 245, 245)' }}>
-            <Header/>
-            <div className="Container">
-                <VStack>
-                    <Flex spacing="4">
-                        <Box mt="-50px">
-                            <Image src="/snaplink_logo_no_background.png" height="145"></Image>
-                        </Box>
-                    </Flex>
-                    <LinkCard/>
-                </VStack>
-            </div>
+                <Header />
+                <div className="Container">
+                    <VStack>
+                        <Flex spacing="4">
+                            <Box mt="-50px">
+                                <Image src="/snaplink_logo_no_background.png" height="145"></Image>
+                            </Box>
+                        </Flex>
+                        <LinkCard />
+                    </VStack>
+                </div>
             </Box>
-            <Footer/>
+            <Footer />
         </div>
     );
 }

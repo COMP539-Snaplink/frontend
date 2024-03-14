@@ -24,6 +24,13 @@ const SigninPage = () => {
         // You might want to implement some feedback to the user that the text was copied.
     };
 
+    const handleLogin = () => {
+        // to-do: integrate backend login api
+        // console.log("test")
+        localStorage.setItem('isLoggedin', 'true');
+        navigate('/'); // Navigate to HomePage after login
+    };
+
     function SigninCard() {
         return (
             <Box>
@@ -36,7 +43,7 @@ const SigninPage = () => {
                                     <Input maxWidth={"400px"} placeholder='Username' backgroundColor="white" borderColor={"black"}/>
                                     <Input maxWidth={"400px"} placeholder='Password' backgroundColor="white" borderColor={"black"} type={"password"}/>
                                     <Flex>
-                                        <Button style={{ width: '160px' }} colorScheme={"whatsapp"} >Register / Login</Button>
+                                        <Button style={{ width: '160px' }} colorScheme={"whatsapp"} onClick={handleLogin}>Register / Login</Button>
                                         <Spacer width={"10px"}/>
                                         <Button leftIcon={<FcGoogle />}> Login With Google </Button>
                                     </Flex>
