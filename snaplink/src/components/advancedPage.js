@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import {
     Box, Button, Flex, Spacer, VStack, Grid, GridItem, SimpleGrid, Text, Table,
-    Thead, Tbody, Tr, Th, Td, Image
+    Thead, Tbody, Tr, Th, Td, Image, Input
 } from "@chakra-ui/react";
 
 const AdvancedPage = () => {
@@ -48,6 +48,12 @@ const AdvancedPage = () => {
     );
 
     const GreetingCard = () => {
+        const [url, setUrl] = useState(''); // State to hold the input URL
+
+        const handleUrlChange = (event) => {
+            setUrl(event.target.value);
+        };
+
         // Unique function for each button
         const handleGetInfoClick = () => {
             console.log('Get Info');
@@ -88,6 +94,13 @@ const AdvancedPage = () => {
             >
                 <Text fontSize='lg'>Hi, {username}</Text>
                 <Text>Your Tokens: {tokens}</Text>
+                <Input
+                    placeholder="Enter your URL here"
+                    size="md"
+                    mt={3}
+                    value={url}
+                    onChange={handleUrlChange}
+                />
                 <SimpleGrid columns={2} spacing={2} width="full">
                     <Button colorScheme='blue' onClick={handleGetInfoClick}>Get Info</Button>
                     <Button colorScheme='blue' onClick={handleGetAnalyticsClick}>Get Analytics</Button>
@@ -161,7 +174,7 @@ const AdvancedPage = () => {
         <Box bg='rgb(245, 245, 245)' minHeight="100vh">
             <Header />
             <VStack spacing={8} paddingY={20} alignItems="center" width="full">
-                <Image src="/snaplink_logo_no_background.png" height="145px" />
+                <Image src="/snaplink_logo_no_background.png" height="145px" mt="100px"/>
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10} paddingX={4} width="full" maxW="4xl">
                     <GreetingCard />
                     <Scoreboard />
