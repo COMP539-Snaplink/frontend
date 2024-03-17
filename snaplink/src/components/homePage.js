@@ -34,7 +34,13 @@ const HomePage = () => {
                                 <VStack spacing="18px">
                                     <HStack>
                                         <Input placeholder='Original/Snap Link Url' backgroundColor="white" borderColor={"black"} />
-                                        <Input width='200px' placeholder="Customized" disabled={true} borderColor={"black"} />
+                                        <Input
+                                            width='200px'
+                                            placeholder="Customized"
+                                            disabled={localStorage.getItem('isLoggedin') !== 'true'}
+                                            borderColor={"black"}
+                                            backgroundColor={localStorage.getItem('isLoggedin') === 'true' ? "white" : "gray.200"}
+                                        />
                                     </HStack>
                                     <Input placeholder='Original/Snap Link Url' backgroundColor="white" borderColor={"black"} />
                                 </VStack>
