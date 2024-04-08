@@ -59,8 +59,8 @@ const AdvancedPage = () => {
             console.log('Get Info');
         };
 
-        const handleGetAnalyticsClick = () => {
-            console.log('Get Analytics');
+        const handleGetHistoryClick = () => {
+            console.log('Get History');
         };
 
         const handleRenewClick = () => {
@@ -103,7 +103,7 @@ const AdvancedPage = () => {
                 />
                 <SimpleGrid columns={2} spacing={2} width="full">
                     <Button colorScheme='blue' onClick={handleGetInfoClick}>Get Info</Button>
-                    <Button colorScheme='blue' onClick={handleGetAnalyticsClick}>Get Analytics</Button>
+                    <Button colorScheme='blue' onClick={handleGetHistoryClick}>Get History</Button>
                 </SimpleGrid>
                 <Box width="full" textAlign="center" my={4}>
                     <Text fontSize='xl' fontWeight='bold'>Advanced Features</Text>
@@ -112,7 +112,7 @@ const AdvancedPage = () => {
                 <SimpleGrid columns={2} spacing={2} width="full">
                     <Button colorScheme='green' onClick={handleRenewClick}>Renew</Button>
                     <Button colorScheme='red' onClick={handleReportClick}>Report</Button>
-                    <Button colorScheme='green' onClick={handleResetTokenClick}>Reset Token...</Button>
+                    <Button colorScheme='green' onClick={handleResetTokenClick}>Reset Token</Button>
                     <Button colorScheme='red' onClick={handleRemoveSpamClick}>Remove Spam</Button>
                 </SimpleGrid>
                 <Button colorScheme='red' width="full" marginTop={4} onClick={handleDeleteClick}>Delete</Button>
