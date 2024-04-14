@@ -4,10 +4,12 @@ import {
     Box, Button, Flex, Spacer, VStack, Grid, GridItem, SimpleGrid, Text, Table,
     Thead, Tbody, Tr, Th, Td, Image, Input
 } from "@chakra-ui/react";
+import * as api from '../api/featureApi';
+
 
 const AdvancedPage = () => {
     const navigate = useNavigate();
-    const username = localStorage.getItem('username') || 'Username'; // Replace with your logic to get the username
+    const username = localStorage.getItem('username') || 'Username';
     const tokens = 'XXXX'; // Replace with your logic to get the tokens
 
     const handleLogout = () => {
