@@ -16,6 +16,24 @@ const AdvancedPage = () => {
         localStorage.removeItem('isLoggedin');
         navigate('/');
     };
+
+    // API Integration
+    const [infoData, setInfoData] = useState(null);
+    const [historyData, setHistoryData] = useState([]);
+
+    const handleInfoReceived = (data) => {
+        // console.log('Received info data:', data)
+        setInfoData(data);
+        
+        setHistoryData([]);  // Clear history data when new info data is received
+    };
+
+    const handleHistoryReceived = (history) => {
+        setHistoryData(history);
+        setInfoData(null);  // Clear info data when new history data is received
+    };
+
+
     function Header() {
         return (
             <Flex display={"flex"} flex={1}>
@@ -49,8 +67,10 @@ const AdvancedPage = () => {
         </Flex>
     );
 
-    const GreetingCard = () => {
+    const GreetingCard = ({ onInfoReceived, onHistoryReceived }) => {
         const [url, setUrl] = useState(''); // State to hold the input URL
+
+        const [apiResponse, setApiResponse] = useState(null);
 
         const handleUrlChange = (event) => {
             setUrl(event.target.value);
@@ -58,11 +78,18 @@ const AdvancedPage = () => {
 
         // Unique function for each button
         const handleGetInfoClick = () => {
-            console.log('Get Info');
+            const mockApiResponse = {
+                spam_status: "1",
+                expire_at: "2024-03-18",
+                created_at: "2024-03-01",
+                long_url: "https://google.com"
+            };
+            onInfoReceived(mockApiResponse);
         };
-
+        
         const handleGetHistoryClick = () => {
-            console.log('Get History');
+            const mockHistoryResponse = ["https://example1.com", "https://example2.com", "https://example3.com"];
+            onHistoryReceived(mockHistoryResponse);
         };
 
         const handleRenewClick = () => {
@@ -123,63 +150,73 @@ const AdvancedPage = () => {
     };
 
 
-    const Scoreboard = () => (
-        <VStack
-            backgroundColor='white'
-            padding={5}
-            borderRadius='lg'
-            boxShadow='base'
-            alignItems='flex-start'
-            width="full"
-        >
-            <Text fontSize='lg'>Scoreboard</Text>
-            <Table variant='simple' width="full">
-                <Thead>
-                    <Tr>
-                        <Th>Tag</Th>
-                        <Th isNumeric>Value</Th>
-                    </Tr>
-                </Thead>
-                <Tbody>
-                    {/* Add your dynamic rows here */}
-                    <Tr>
-                        <Td>Example Tag</Td>
-                        <Td isNumeric>123</Td>
-                    </Tr>
-                    <Tr>
-                        <Td>Example Tag</Td>
-                        <Td isNumeric>123</Td>
-                    </Tr>
-                    <Tr>
-                        <Td>Example Tag</Td>
-                        <Td isNumeric>123</Td>
-                    </Tr>
-                    <Tr>
-                        <Td>Example Tag</Td>
-                        <Td isNumeric>123</Td>
-                    </Tr>
-                    <Tr>
-                        <Td>Example Tag</Td>
-                        <Td isNumeric>123</Td>
-                    </Tr>
-                    <Tr>
-                        <Td>Example Tag</Td>
-                        <Td isNumeric>123</Td>
-                    </Tr>
-                    {/* ... more rows */}
-                </Tbody>
-            </Table>
-        </VStack>
-    );
+
+    const Scoreboard = ({ infoData, historyData }) => {
+        console.log("Rendering Scoreboard with", { infoData, historyData });
+
+        let hasHistoryData = historyData && historyData.length > 0;
+        let hasInfoData = infoData && Object.keys(infoData).length > 0;
+    
+        return (
+            <VStack backgroundColor='white' padding={5} borderRadius='lg' boxShadow='base' alignItems='flex-start' width="full">
+                <Text fontSize='lg'>Scoreboard</Text>
+                <Table variant='simple' width="full">
+                    <Thead>
+                        <Tr>
+                            <Th>Tag</Th>
+                            <Th>Value</Th>
+                        </Tr>
+                    </Thead>
+                    <Tbody>
+                        {hasInfoData && !hasHistoryData && (
+                            <>
+                                <Tr>
+                                    <Td>Spam Status</Td>
+                                    <Td>{infoData.spam_status || 'N/A'}</Td>
+                                </Tr>
+                                <Tr>
+                                    <Td>Expires At</Td>
+                                    <Td>{infoData.expire_at || 'N/A'}</Td>
+                                </Tr>
+                                <Tr>
+                                    <Td>Created At</Td>
+                                    <Td>{infoData.created_at || 'N/A'}</Td>
+                                </Tr>
+                                <Tr>
+                                    <Td>Long URL</Td>
+                                    <Td>{infoData.long_url || 'N/A'}</Td>
+                                </Tr>
+                            </>
+                        )}
+                        {hasHistoryData && !hasInfoData && (
+                            historyData.map((url, index) => (
+                                <Tr key={index}>
+                                    <Td>URL {index + 1}</Td>
+                                    <Td>{url}</Td>
+                                </Tr>
+                            ))
+                        )}
+                        {!hasHistoryData && !hasInfoData && (
+                            <Tr>
+                                <Td colSpan={2}>No data available</Td>
+                            </Tr>
+                        )}
+                    </Tbody>
+                </Table>
+            </VStack>
+        );
+    };
+    
+
 
     return (
         <Box bg='rgb(245, 245, 245)' minHeight="100vh">
             <Header />
             <VStack spacing={8} paddingY={20} alignItems="center" width="full">
-                <Image src="/snaplink_logo_no_background.png" height="145px" mt="100px"/>
+                <Image src="/snaplink_logo_no_background.png" height="145px" mt="100px" />
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10} paddingX={4} width="full" maxW="4xl">
-                    <GreetingCard />
-                    <Scoreboard />
+                <GreetingCard onInfoReceived={handleInfoReceived} onHistoryReceived={handleHistoryReceived} />
+                <Scoreboard infoData={infoData} historyData={historyData} />
                 </SimpleGrid>
             </VStack>
             <Spacer />
