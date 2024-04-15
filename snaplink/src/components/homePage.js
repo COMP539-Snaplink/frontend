@@ -11,56 +11,79 @@ const HomePage = () => {
     const [customized, setCustomized] = useState('');
     const [generatedUrl, setGeneratedUrl] = useState('');
     const navigate = useNavigate()
-    const handleGenerate = () => {
-        // Implement the logic to generate the URL
-        // Placeholder logic:
-        setGeneratedUrl(`original/snaplk/${customized || inputUrl}`);
+    const [inputValues, setInputValues] = useState({
+        inputUrl: '',
+        customized: '',
+        generatedUrl: '' // Depending on your use case, this might not be necessary to handle here
+    });
+
+    const [latency, setLatency] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
+
+    const backendUrl = 'https://comp539-team2-backend-dot-rice-comp-539-spring-2022.uk.r.appspot.com';
+
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setInputValues(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
     };
+
+    const handleGenerate = async () => {
+        setErrorMessage('');
+        // Validate input URL
+        if (!inputValues.inputUrl.trim()) {
+            setGeneratedUrl('');
+            setLatency('Please enter a URL.');
+            return;
+        }
+
+        // Set up request body and API endpoint
+        const requestBody = {
+            long_url: inputValues.inputUrl,
+            email: "wl86@rice.edu" // Replace with actual user email
+        };
+        let apiUrl = `${backendUrl}/api/shorten`;
+
+        // If the user has provided a customized alias, adjust requestBody and apiUrl
+        if (inputValues.customized.trim() !== '') {
+            requestBody.short_url = inputValues.customized;
+            apiUrl = `${backendUrl}/api/customizeUrl`;
+        }
+
+        try {
+            // Make the API call
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            });
+
+            // Parse the JSON response
+            const result = await response.json();
+
+            // Check if the response is successful
+            if (response.ok && result.status === "success") {
+                // ... successful response handling
+                setLatency(`Latency: ${result.data.latency || ''} ms`);
+            } else {
+                // If the response contains a custom error message
+                setErrorMessage(result.message || 'Failed to generate URL.');
+            }
+        } catch (error) {
+            console.error('Error during URL generation:', error);
+            setErrorMessage('An error occurred. Please try again.');
+        }
+    };
+
+
 
     const handleCopy = () => {
         navigator.clipboard.writeText(generatedUrl);
         // You might want to implement some feedback to the user that the text was copied.
     };
-
-    function LinkCard() {
-        return (
-            <Box>
-                <Card width="200" boxShadow="xl" w="620px" style={{ backgroundColor: 'rgb(190, 219, 245)' }} rounded='2xl'>
-                    <HStack>
-                        <Box width="14px"></Box>
-                        <CardBody>
-                            <Spacer height='25px'></Spacer>
-                            <Flex spacing="4">
-                                <VStack spacing="18px">
-                                    <HStack>
-                                        <Input placeholder='Original/Snap Link Url' backgroundColor="white" borderColor={"black"} />
-                                        <Input
-                                            width='200px'
-                                            placeholder="Customized"
-                                            disabled={localStorage.getItem('isLoggedin') !== 'true'}
-                                            borderColor={"black"}
-                                            backgroundColor={localStorage.getItem('isLoggedin') === 'true' ? "white" : "gray.200"}
-                                        />
-                                    </HStack>
-                                    <Input placeholder='Original/Snap Link Url' backgroundColor="white" borderColor={"black"} />
-                                </VStack>
-                                <Box width='20px'></Box>
-                                <VStack spacing="18px">
-                                    <Box style={{ display: 'flex' }}>
-                                        <Button style={{ width: '100px' }} colorScheme={"whatsapp"}>Generate</Button>
-                                    </Box>
-                                    <Box style={{ display: 'flex' }}>
-                                        <Button style={{ width: '100px' }} colorScheme={"whatsapp"}>Copy</Button>
-                                    </Box>
-                                </VStack>
-                            </Flex>
-                            <Spacer height='25px'></Spacer>
-                        </CardBody>
-                    </HStack>
-                </Card>
-            </Box>
-        )
-    }
 
     function Footer() {
         return (
@@ -95,8 +118,13 @@ const HomePage = () => {
 
         const handleLogout = () => {
             localStorage.removeItem('isLoggedin'); // Remove the flag from local storage
+            setInputValues({ ...inputValues, customized: '' }); // Clear the customized input
+            setGeneratedUrl(''); // Clear any generated URL
+            setLatency(''); // Clear latency message
+            setErrorMessage(''); // Clear any error message
             navigate('/'); // Optionally refresh the page or navigate as needed
         };
+
 
         return (
             <Flex style={{ backgroundColor: 'rgb(190, 219, 245)' }} minH={'80px'} flex={1} w="100vw"
@@ -119,13 +147,68 @@ const HomePage = () => {
             <Box style={{ backgroundColor: 'rgb(245, 245, 245)' }}>
                 <Header />
                 <div className="Container">
-                    <VStack>
+                    <VStack align={"stretch"}>
                         <Flex spacing="4">
                             <Box mt="-50px">
                                 <Image src="/snaplink_logo_no_background.png" height="145"></Image>
                             </Box>
                         </Flex>
-                        <LinkCard />
+                        <Box>
+                            <Card width="200" boxShadow="xl" w="620px" style={{ backgroundColor: 'rgb(190, 219, 245)' }} rounded='2xl'>
+                                <HStack>
+                                    <Box width="14px"></Box>
+                                    <CardBody>
+                                        <Spacer height='25px'></Spacer>
+                                        <Flex spacing="4">
+                                            <VStack spacing="18px">
+                                                <HStack>
+                                                    <Input
+                                                        name="inputUrl"
+                                                        placeholder='Original/Snap Link Url'
+                                                        backgroundColor="white"
+                                                        borderColor={"black"}
+                                                        type={"text"}
+                                                        value={inputValues.inputUrl}
+                                                        onChange={handleInputChange}
+                                                    />
+                                                    <Input
+                                                        name="customized"
+                                                        width='200px'
+                                                        placeholder="Customized"
+                                                        disabled={localStorage.getItem('isLoggedin') !== 'true'}
+                                                        borderColor={"black"}
+                                                        onChange={handleInputChange}
+                                                        value={inputValues.customized}
+                                                        backgroundColor={localStorage.getItem('isLoggedin') === 'true' ? "white" : "gray.200"}
+                                                    />
+                                                </HStack>
+                                                <Input placeholder='Generated URL' value={generatedUrl} isReadOnly={true} backgroundColor="white" borderColor={"black"} />
+                                            </VStack>
+                                            <Box width='20px'></Box>
+                                            <VStack spacing="18px">
+                                                <Button
+                                                    style={{ width: '100px' }}
+                                                    colorScheme={"whatsapp"}
+                                                    onClick={handleGenerate}
+                                                >
+                                                    {inputValues.customized.trim() !== '' ? 'Customize' : 'Generate'}
+                                                </Button>
+
+                                                <Box style={{ display: 'flex' }}>
+                                                    <Button style={{ width: '100px' }} colorScheme={"whatsapp"} onClick={handleCopy}>Copy</Button>
+                                                </Box>
+                                            </VStack>
+                                        </Flex>
+                                        <Spacer height='25px'></Spacer>
+                                    </CardBody>
+                                </HStack>
+                            </Card>
+                        </Box>
+                        <Text pl={"4"} color={errorMessage ? "red.500" : "black"} textAlign="left">
+                            {errorMessage || latency}
+                        </Text>
+
+
                     </VStack>
                 </div>
             </Box>

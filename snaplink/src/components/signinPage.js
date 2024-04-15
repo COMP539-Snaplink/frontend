@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import {useLocation, useNavigate} from "react-router-dom";
+import React, {useState} from 'react';
+import {useNavigate} from "react-router-dom";
 import {FcGoogle} from "react-icons/fc";
 
 
 // import './homePage.css';
 // import '../App.css';
-import {Box, Card, Flex, Input, HStack, Image, VStack, CardBody, Button, Spacer, Text} from "@chakra-ui/react";
-import {EditIcon} from '@chakra-ui/icons';
+import {Box, Button, Card, CardBody, Flex, HStack, Image, Input, Spacer, VStack} from "@chakra-ui/react";
 
 const SigninPage = () => {
     const [inputUrl, setInputUrl] = useState('');
@@ -31,6 +30,21 @@ const SigninPage = () => {
         navigate('/'); // Navigate to HomePage after login
     };
 
+    const backendUrl = 'https://comp539-team2-backend-dot-rice-comp-539-spring-2022.uk.r.appspot.com';
+
+    const handleLoginWithGoogle = async () => {
+        // This function will be triggered when the user clicks the button
+        const response = await fetch(`${backendUrl}/login/getGoogleAuthUrl`, {
+            redirect: 'manual'  // This tells fetch not to follow redirects automatically
+        });
+        if (response.type === 'opaqueredirect') {
+            window.location.href = response.url;  // This should have the URL to which you are being redirected
+        } else {
+            throw new Error('Failed to retrieve Google login URL');
+        }
+
+    };
+
     function SigninCard() {
         return (
             <Box>
@@ -45,7 +59,7 @@ const SigninPage = () => {
                                     <Flex>
                                         <Button style={{ width: '160px' }} colorScheme={"whatsapp"} onClick={handleLogin}>Register / Login</Button>
                                         <Spacer width={"10px"}/>
-                                        <Button leftIcon={<FcGoogle />}> Login With Google </Button>
+                                        <Button leftIcon={<FcGoogle />} onClick={handleLoginWithGoogle}>Login With Google</Button>
                                     </Flex>
                                 </VStack>
                             </Flex>
