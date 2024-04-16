@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import {useLocation, useNavigate} from "react-router-dom";
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useSearchParams} from "react-router-dom";
 import {FcGoogle} from "react-icons/fc";
 
 
 // import './homePage.css';
 // import '../App.css';
-import {Box, Card, Flex, Input, HStack, Image, VStack, CardBody, Button, Spacer, Text} from "@chakra-ui/react";
-import {EditIcon} from '@chakra-ui/icons';
+import {Box, Button, Card, CardBody, Flex, HStack, Image, Input, Spacer, VStack} from "@chakra-ui/react";
 
 const SigninPage = () => {
     const [inputUrl, setInputUrl] = useState('');
@@ -19,6 +18,38 @@ const SigninPage = () => {
         setGeneratedUrl(`original/snaplk/${customized || inputUrl}`);
     };
 
+    const GoogleAuthCallback = () => {
+        const [searchParams] = useSearchParams();
+        const navigate = useNavigate();
+        const code = searchParams.get('code');
+
+        useEffect(() => {
+            if (code) {
+                // Optionally send the code back to the backend or handle it directly depending on your security setup
+                fetch('https://your-backend.com/api/handle-google-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ code }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Handle data received from backend, e.g., user info, tokens, etc.
+                        navigate('/dashboard'); // Redirect to dashboard or another page
+                    })
+                    .catch(error => {
+                        console.error('Error processing login data:', error);
+                        navigate('/login'); // Redirect back to login on error
+                    });
+            } else {
+                navigate('/login'); // No code present, redirect back to login
+            }
+        }, [code, navigate]);
+
+        return <div>Loading...</div>;
+    };
+
     const handleCopy = () => {
         navigator.clipboard.writeText(generatedUrl);
         // You might want to implement some feedback to the user that the text was copied.
@@ -29,6 +60,21 @@ const SigninPage = () => {
         // console.log("test")
         localStorage.setItem('isLoggedin', 'true');
         navigate('/'); // Navigate to HomePage after login
+    };
+
+    const backendUrl = 'https://comp539-team2-backend-dot-rice-comp-539-spring-2022.uk.r.appspot.com';
+
+    const handleLoginWithGoogle = async () => {
+        // This function will be triggered when the user clicks the button
+        const response = await fetch(`${backendUrl}/login/getGoogleAuthUrl`, { redirect: 'manual' });
+        if (response.type === 'opaqueredirect') {
+             // Or handle the location in a different way
+            window.location.href = response.url;
+        } else {
+            throw new Error('Failed to retrieve Google login URL');
+        }
+
+
     };
 
     function SigninCard() {
@@ -45,7 +91,7 @@ const SigninPage = () => {
                                     <Flex>
                                         <Button style={{ width: '160px' }} colorScheme={"whatsapp"} onClick={handleLogin}>Register / Login</Button>
                                         <Spacer width={"10px"}/>
-                                        <Button leftIcon={<FcGoogle />}> Login With Google </Button>
+                                        <Button leftIcon={<FcGoogle />} onClick={handleLoginWithGoogle}>Login With Google</Button>
                                     </Flex>
                                 </VStack>
                             </Flex>
