@@ -9,7 +9,7 @@ import * as api from '../api/featureApi';
 
 const AdvancedPage = () => {
     const navigate = useNavigate();
-    const username = localStorage.getItem('username') || 'Username';
+    const email = localStorage.getItem('username') || localStorage.getItem('userEmail') || 'aj103@rice.edu';
     const tokens = 'XXXX'; // Replace with your logic to get the tokens
 
     const handleLogout = () => {
@@ -24,7 +24,7 @@ const AdvancedPage = () => {
     const handleInfoReceived = (data) => {
         // console.log('Received info data:', data)
         setInfoData(data);
-        
+
         setHistoryData([]);  // Clear history data when new info data is received
     };
 
@@ -78,18 +78,28 @@ const AdvancedPage = () => {
 
         // Unique function for each button
         const handleGetInfoClick = () => {
-            const mockApiResponse = {
-                spam_status: "1",
-                expire_at: "2024-03-18",
-                created_at: "2024-03-01",
-                long_url: "https://google.com"
+            const fetchData = async () => {
+                try {
+                    const response = await api.getInfo(email, url);
+                    console.log('Response:', response);
+                    onInfoReceived(response)
+                } catch (error) {
+                    console.error('Error fetching information:', error);
+                }
             };
-            onInfoReceived(mockApiResponse);
+            fetchData();
         };
-        
+
         const handleGetHistoryClick = () => {
-            const mockHistoryResponse = ["https://example1.com", "https://example2.com", "https://example3.com"];
-            onHistoryReceived(mockHistoryResponse);
+            const fetchData = async () => {
+                try {
+                    const response = await api.getHistory(email);
+                    onHistoryReceived(response)
+                } catch (error) {
+                    console.error('Error fetching information:', error);
+                }
+            };
+            fetchData();
         };
 
         const handleRenewClick = () => {
@@ -97,7 +107,16 @@ const AdvancedPage = () => {
         };
 
         const handleReportClick = () => {
-            console.log('Report');
+            console.log('Mark as spam');
+            const fetchData = async () => {
+                try {
+                    const response = await api.markSpam(email, url);
+                    console.log(response)
+                } catch (error) {
+                    console.error('Error marking as spam:', error);
+                }
+            };
+            fetchData();
         };
 
         const handleResetTokenClick = () => {
@@ -106,6 +125,16 @@ const AdvancedPage = () => {
 
         const handleRemoveSpamClick = () => {
             console.log('Remove Spam');
+            const fetchData = async () => {
+                try {
+                    const response = await api.removeSpam(email, url);
+                    console.log(response)
+                } catch (error) {
+                    console.error('Error removing spam:', error);
+                }
+            };
+            fetchData();
+            // window.location.reload();
         };
 
         const handleDeleteClick = () => {
@@ -121,7 +150,7 @@ const AdvancedPage = () => {
                 alignItems='flex-start'
                 width="full"
             >
-                <Text fontSize='lg'>Hi, {username}</Text>
+                <Text fontSize='lg'>Hi, {email}</Text>
                 <Text>Your Tokens: {tokens}</Text>
                 <Input
                     placeholder="Enter your URL here"
@@ -156,7 +185,12 @@ const AdvancedPage = () => {
 
         let hasHistoryData = historyData && historyData.length > 0;
         let hasInfoData = infoData && Object.keys(infoData).length > 0;
-    
+
+        const tdStyle = {
+            wordBreak: 'break-word',  // Breaks the word at any character to prevent overflow
+            maxWidth: '150px'         // Adjust maxWidth as needed to fit your design
+        };
+
         return (
             <VStack backgroundColor='white' padding={5} borderRadius='lg' boxShadow='base' alignItems='flex-start' width="full">
                 <Text fontSize='lg'>Scoreboard</Text>
@@ -172,19 +206,19 @@ const AdvancedPage = () => {
                             <>
                                 <Tr>
                                     <Td>Spam Status</Td>
-                                    <Td>{infoData.spam_status || 'N/A'}</Td>
+                                    <Td style={tdStyle}>{infoData.spam_status || 'N/A'}</Td>
                                 </Tr>
                                 <Tr>
                                     <Td>Expires At</Td>
-                                    <Td>{infoData.expire_at || 'N/A'}</Td>
+                                    <Td style={tdStyle}>{infoData.expire_at || 'N/A'}</Td>
                                 </Tr>
                                 <Tr>
                                     <Td>Created At</Td>
-                                    <Td>{infoData.created_at || 'N/A'}</Td>
+                                    <Td style={tdStyle}>{infoData.created_at || 'N/A'}</Td>
                                 </Tr>
                                 <Tr>
                                     <Td>Long URL</Td>
-                                    <Td>{infoData.long_url || 'N/A'}</Td>
+                                    <Td style={tdStyle}>{infoData.long_url || 'N/A'}</Td>
                                 </Tr>
                             </>
                         )}
@@ -192,7 +226,7 @@ const AdvancedPage = () => {
                             historyData.map((url, index) => (
                                 <Tr key={index}>
                                     <Td>URL {index + 1}</Td>
-                                    <Td>{url}</Td>
+                                    <Td style={tdStyle}>{url}</Td>
                                 </Tr>
                             ))
                         )}
@@ -206,7 +240,7 @@ const AdvancedPage = () => {
             </VStack>
         );
     };
-    
+
 
 
     return (
@@ -215,8 +249,8 @@ const AdvancedPage = () => {
             <VStack spacing={8} paddingY={20} alignItems="center" width="full">
                 <Image src="/snaplink_logo_no_background.png" height="145px" mt="100px" />
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10} paddingX={4} width="full" maxW="4xl">
-                <GreetingCard onInfoReceived={handleInfoReceived} onHistoryReceived={handleHistoryReceived} />
-                <Scoreboard infoData={infoData} historyData={historyData} />
+                    <GreetingCard onInfoReceived={handleInfoReceived} onHistoryReceived={handleHistoryReceived} />
+                    <Scoreboard infoData={infoData} historyData={historyData} />
                 </SimpleGrid>
             </VStack>
             <Spacer />

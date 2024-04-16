@@ -19,9 +19,9 @@ export const getHistory = async (email) => {
 };
 
 // Function to remove spam by short URL
-export const removeSpam = async (shortUrl) => {
+export const removeSpam = async (email, shortUrl) => {
     try {
-        const response = await axiosInstance.post(`${baseURL}/removeSpam`, { short_url: shortUrl });
+        const response = await axiosInstance.put(`${baseURL}/removeSpam`, { email: email, short_url: shortUrl });
         return response.data;
     } catch (error) {
         throw error;
@@ -29,9 +29,9 @@ export const removeSpam = async (shortUrl) => {
 };
 
 // Function to get info by short URL
-export const getInfo = async (shortUrl) => {
+export const getInfo = async (email, shortUrl) => {
     try {
-        const response = await axiosInstance.post(`${baseURL}/getInfo`, { short_url: shortUrl });
+        const response = await axiosInstance.post(`${baseURL}/getInfo`, { email: email, short_url: shortUrl });
         return response.data;
     } catch (error) {
         throw error;
@@ -39,9 +39,9 @@ export const getInfo = async (shortUrl) => {
 };
 
 // Function to mark spam by short URL
-export const markSpam = async (shortUrl) => {
+export const markSpam = async (email, shortUrl) => {
     try {
-        const response = await axiosInstance.post(`${baseURL}/markSpam`, { short_url: shortUrl });
+        const response = await axiosInstance.put(`${baseURL}/markSpam`, { email: email, short_url: shortUrl });
         return response.data;
     } catch (error) {
         throw error;
