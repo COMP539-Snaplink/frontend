@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {useNavigate} from "react-router-dom";
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useSearchParams} from "react-router-dom";
 import {FcGoogle} from "react-icons/fc";
 
 
@@ -18,6 +18,38 @@ const SigninPage = () => {
         setGeneratedUrl(`original/snaplk/${customized || inputUrl}`);
     };
 
+    const GoogleAuthCallback = () => {
+        const [searchParams] = useSearchParams();
+        const navigate = useNavigate();
+        const code = searchParams.get('code');
+
+        useEffect(() => {
+            if (code) {
+                // Optionally send the code back to the backend or handle it directly depending on your security setup
+                fetch('https://your-backend.com/api/handle-google-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ code }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Handle data received from backend, e.g., user info, tokens, etc.
+                        navigate('/dashboard'); // Redirect to dashboard or another page
+                    })
+                    .catch(error => {
+                        console.error('Error processing login data:', error);
+                        navigate('/login'); // Redirect back to login on error
+                    });
+            } else {
+                navigate('/login'); // No code present, redirect back to login
+            }
+        }, [code, navigate]);
+
+        return <div>Loading...</div>;
+    };
+
     const handleCopy = () => {
         navigator.clipboard.writeText(generatedUrl);
         // You might want to implement some feedback to the user that the text was copied.
@@ -34,14 +66,14 @@ const SigninPage = () => {
 
     const handleLoginWithGoogle = async () => {
         // This function will be triggered when the user clicks the button
-        const response = await fetch(`${backendUrl}/login/getGoogleAuthUrl`, {
-            redirect: 'manual'  // This tells fetch not to follow redirects automatically
-        });
+        const response = await fetch(`${backendUrl}/login/getGoogleAuthUrl`, { redirect: 'manual' });
         if (response.type === 'opaqueredirect') {
-            window.location.href = response.url;  // This should have the URL to which you are being redirected
+             // Or handle the location in a different way
+            window.location.href = response.url;
         } else {
             throw new Error('Failed to retrieve Google login URL');
         }
+
 
     };
 

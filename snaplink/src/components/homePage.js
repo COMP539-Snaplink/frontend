@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from "react-router-dom";
+import React, {useEffect, useState} from 'react';
+import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 // import './homePage.css';
 // import '../App.css';
@@ -19,7 +20,22 @@ const HomePage = () => {
 
     const [latency, setLatency] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [userEmail, setUserEmail] = useState('');
+    const [searchParams] = useSearchParams();
+    const token = searchParams.get('token');
 
+    useEffect(() => {
+        if (token) {
+            // Decode the token to get user information
+            const decodedToken = jwtDecode(token);
+            // You can now use the decoded token to get the user's email
+            const email = decodedToken.email;
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('isLoggedin', 'true');
+            setUserEmail(email)
+            navigate('/');
+        }
+    }, [token]);
 
     const backendUrl = 'https://comp539-team2-backend-dot-rice-comp-539-spring-2022.uk.r.appspot.com';
 
@@ -40,44 +56,73 @@ const HomePage = () => {
             return;
         }
 
-        // Set up request body and API endpoint
-        const requestBody = {
-            long_url: inputValues.inputUrl,
-            email: "wl86@rice.edu" // Replace with actual user email
-        };
-        let apiUrl = `${backendUrl}/api/shorten`;
+        if (inputValues.inputUrl.startsWith('https://snaplink.surge.sh/')) {
+            // Extract the part of the URL after the prefix to get the short_url without prefix
+            const urlPrefixLength = 'https://snaplink.surge.sh/'.length;
+            const shortUrlWithoutPrefix = inputValues.inputUrl.substring(urlPrefixLength);
 
-        // If the user has provided a customized alias, adjust requestBody and apiUrl
-        if (inputValues.customized.trim() !== '') {
-            requestBody.short_url = inputValues.customized;
-            apiUrl = `${backendUrl}/api/customizeUrl`;
-        }
+            try {
+                // Call the resolve API
+                const resolveResponse = await fetch(`${backendUrl}/api/resolve/${shortUrlWithoutPrefix}`);
+                const resolveResult = await resolveResponse.json();
 
-        try {
-            // Make the API call
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody)
-            });
-
-            // Parse the JSON response
-            const result = await response.json();
-
-            // Check if the response is successful
-            if (response.ok && result.status === "success") {
-                // ... successful response handling
-                setLatency(`Latency: ${result.data.latency || ''} ms`);
-            } else {
-                // If the response contains a custom error message
-                setErrorMessage(result.message || 'Failed to generate URL.');
+                if (resolveResponse.ok && resolveResult.status === "success") {
+                    setInputValues({ ...inputValues, generatedUrl: resolveResult.data });
+                    setGeneratedUrl(resolveResult.data)
+                    setLatency('');
+                } else {
+                    setErrorMessage(resolveResult.message || 'Failed to resolve URL.');
+                }
+            } catch (error) {
+                console.error('Error during URL resolving:', error);
+                setErrorMessage('An error occurred while resolving the URL. Please try again.');
             }
-        } catch (error) {
-            console.error('Error during URL generation:', error);
-            setErrorMessage('An error occurred. Please try again.');
+        } else {
+            // Set up request body and API endpoint
+            const requestBody = {
+                long_url: inputValues.inputUrl,
+                email: userEmail // Replace with actual user email
+            };
+            let apiUrl = `${backendUrl}/api/shorten`;
+
+            // If the user has provided a customized alias, adjust requestBody and apiUrl
+            if (inputValues.customized.trim() !== '') {
+                requestBody.short_url = `https://snaplink.surge.sh/${inputValues.customized}`;
+                apiUrl = `${backendUrl}/api/customizeUrl`;
+            }
+
+            try {
+                // Make the API call
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                // Parse the JSON response
+                const result = await response.json();
+
+                // Check if the response is successful
+                if (response.ok && result.status === "success") {
+                    // ... successful response handling
+                    setInputValues({ ...inputValues, generatedUrl: result.data.shortenedUrl });
+                    setGeneratedUrl(result.data.shortenedUrl)
+                    if (inputValues.customized.trim() === '') {
+                        setLatency(`Latency: ${result.data.latency || ''} ms`);
+                    }
+                    else {
+                        setGeneratedUrl(result.data)
+                    }
+                } else {
+                    // If the response contains a custom error message
+                    setErrorMessage(result.message || 'Failed to generate URL.');
+                }
+            } catch (error) {
+                console.error('Error during URL generation:', error);
+                setErrorMessage('An error occurred. Please try again.');
+            }
         }
     };
-
 
 
     const handleCopy = () => {
@@ -114,10 +159,12 @@ const HomePage = () => {
 
     function Header() {
         const navigate = useNavigate();
-        const isLoggedIn = localStorage.getItem('isLoggedin') === 'true';
+        const isLoggedIn = localStorage.getItem('userEmail') !== null;
+
 
         const handleLogout = () => {
-            localStorage.removeItem('isLoggedin'); // Remove the flag from local storage
+            localStorage.removeItem('userEmail'); // Remove the user email from local storage
+            localStorage.removeItem('isLoggedin');
             setInputValues({ ...inputValues, customized: '' }); // Clear the customized input
             setGeneratedUrl(''); // Clear any generated URL
             setLatency(''); // Clear latency message
@@ -191,7 +238,7 @@ const HomePage = () => {
                                                     colorScheme={"whatsapp"}
                                                     onClick={handleGenerate}
                                                 >
-                                                    {inputValues.customized.trim() !== '' ? 'Customize' : 'Generate'}
+                                                    {inputValues.inputUrl.startsWith('https://snaplink.surge.sh/') ? 'Resolve' : 'Generate'}
                                                 </Button>
 
                                                 <Box style={{ display: 'flex' }}>

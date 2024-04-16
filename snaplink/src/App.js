@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from "./components/homePage";
 import SigninPage from "./components/signinPage";
 import AdvancedPage from "./components/advancedPage";
+import ResolveShortUrl from "./components/resolveShorUrl";
 
 function App() {
     return (
@@ -11,6 +12,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<SigninPage />} />
+                <Route path="/:shortUrl" element={<ResolveShortUrl />} />
                 <Route path="/advanced" element={<AdvancedPage />} />
             </Routes>
         </BrowserRouter>
