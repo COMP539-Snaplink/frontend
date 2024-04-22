@@ -235,7 +235,7 @@ const HomePage = () => {
                 {isLoggedIn ? (
                     <>
                         <Button colorScheme="yellow" onClick={handleSubscribe} isDisabled={isSubscribed}>Subscribe</Button>
-                        <Button colorScheme="blue" onClick={() => navigate("/advanced")} ml={4}>Advanced</Button>
+                        <Button colorScheme="blue" onClick={() => navigate("/advanced")} isDisabled={!isSubscribed} ml={4}>Advanced</Button>
                         <Button colorScheme="red" onClick={handleLogout} ml={4}>Logout</Button>
                     </>
                 ) : (
