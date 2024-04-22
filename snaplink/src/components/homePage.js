@@ -23,6 +23,36 @@ const HomePage = () => {
     const [userEmail, setUserEmail] = useState('');
     const [searchParams] = useSearchParams();
     const token = searchParams.get('token');
+    const checkEmail = localStorage.getItem('userEmail') || 'placeholder@rice.edu';
+    const [isSubscribed, setIsSubscribed] = useState(true);
+
+
+    const checkSubscriptionStatus = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/api/customizeUrl`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    long_url: 'https://example.com', // Dummy URL for testing
+                    short_url: 'https://snaplink.surge.sh/test', // Dummy customized URL for testing
+                    email: checkEmail,
+                }),
+            });
+            const result = await response.json();
+            if (response.ok || result.data.includes("Please try a different URL.")) {
+                setIsSubscribed(true);
+            } else {
+                setIsSubscribed(false);
+            }
+        } catch (error) {
+            console.error('Error checking subscription status:', error);
+        }
+
+    };
+
+    useEffect(() => {
+        checkSubscriptionStatus();
+    }, [userEmail]);
 
     useEffect(() => {
         if (token) {
@@ -34,6 +64,8 @@ const HomePage = () => {
             localStorage.setItem('isLoggedin', 'true');
             setUserEmail(email)
             navigate('/');
+        } else {
+            setUserEmail(checkEmail);
         }
     }, [token]);
 
@@ -46,6 +78,30 @@ const HomePage = () => {
             [name]: value
         }));
     };
+
+    const handleSubscribe = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/subscribe`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: userEmail }),
+            });
+
+            if (response.ok) {
+                // If the subscription was successful
+                const result = await response.text(); // Or .json(), depending on your backend
+                setIsSubscribed(true); // Update the state to reflect the new subscription status
+            } else {
+                // Handle errors, such as displaying a message to the user
+                console.error('Failed to subscribe.');
+            }
+        } catch (error) {
+            console.error('Error during subscription process:', error);
+        }
+    };
+
 
     const handleGenerate = async () => {
         setErrorMessage('');
@@ -178,7 +234,8 @@ const HomePage = () => {
                 position="fixed" top={0} left={0} right={0} alignItems={"center"} justifyContent={"flex-end"} px={4}>
                 {isLoggedIn ? (
                     <>
-                        <Button colorScheme="blue" onClick={() => navigate("/advanced")}>Advanced</Button>
+                        <Button colorScheme="yellow" onClick={handleSubscribe} isDisabled={isSubscribed}>Subscribe</Button>
+                        <Button colorScheme="blue" onClick={() => navigate("/advanced")} ml={4}>Advanced</Button>
                         <Button colorScheme="red" onClick={handleLogout} ml={4}>Logout</Button>
                     </>
                 ) : (

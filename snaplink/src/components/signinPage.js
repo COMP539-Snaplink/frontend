@@ -58,6 +58,7 @@ const SigninPage = () => {
     const handleLogin = () => {
         // to-do: integrate backend login api
         // console.log("test")
+        localStorage.setItem('userEmail', "wl86111@rice.edu");
         localStorage.setItem('isLoggedin', 'true');
         navigate('/'); // Navigate to HomePage after login
     };
