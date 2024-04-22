@@ -38,8 +38,10 @@ const ResolveShortUrl = () => {
     // }
 
     if (error) {
-        return <div>Error: {error}</div>;
+        // return <div>Error: {error}</div>;
+        window.location.href = "https://snaplink.surge.sh/";
     }
+
 
     // If not loading and no error, redirecting will have been triggered
     return null;
