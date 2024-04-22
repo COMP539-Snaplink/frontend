@@ -47,3 +47,40 @@ export const markSpam = async (email, shortUrl) => {
         throw error;
     }
 };
+
+export const getTokens = async (email) => {
+    try {
+        const response = await axiosInstance.post(`${baseURL}/getTokens`, { email });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+export const resetTokens = async (email) => {
+    try {
+        const response = await axiosInstance.post(`${baseURL}/resetTokens`, { email });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const deleteShortUrl = async (email, shortUrl) => {
+    try {
+        const response = await axiosInstance.delete(`${baseURL}/delete`, { email: email, short_url: shortUrl });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const renewExpiration = async (email) => {
+    try {
+        const response = await axiosInstance.put(`${baseURL}/renew_expiration`, { email });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};

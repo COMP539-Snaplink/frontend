@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import {
     Box, Button, Flex, Spacer, VStack, Grid, GridItem, SimpleGrid, Text, Table,
@@ -9,8 +9,13 @@ import * as api from '../api/featureApi';
 
 const AdvancedPage = () => {
     const navigate = useNavigate();
-    const email = localStorage.getItem('username') || localStorage.getItem('userEmail') || 'aj103@rice.edu';
-    const tokens = 'XXXX'; // Replace with your logic to get the tokens
+    const email = localStorage.getItem('userEmail') || 'aj103@rice.edu';
+    // const email = 'tk57@rice.edu';
+    // const email = 'aj103@rice.edu';
+    // const tokens = 'XXXX'; // Replace with your logic to get the tokens
+
+    const [tokens, setTokens] = useState('Loading tokens...');
+
 
     const handleLogout = () => {
         localStorage.removeItem('isLoggedin');
@@ -33,6 +38,30 @@ const AdvancedPage = () => {
         setInfoData(null);  // Clear info data when new history data is received
     };
 
+    useEffect(() => {
+        const fetchTokens = async () => {
+            try {
+                const tokenResponse = await api.getTokens(email); // Assuming getTokens API needs email
+                console.log('Tokens:', tokenResponse)
+                setTokens(tokenResponse); // Update the tokens state with the fetched tokens
+            } catch (error) {
+                console.error('Failed to fetch tokens:', error);
+                setTokens('Failed to load tokens');
+            }
+        };
+
+        fetchTokens();
+    }, []); 
+
+    const fetchTokens = async () => {
+        try {
+            const tokenResponse = await api.getTokens(email);
+            setTokens(tokenResponse);
+        } catch (error) {
+            console.error('Failed to fetch tokens:', error);
+            setTokens('Failed to load tokens');
+        }
+    };
 
     function Header() {
         return (
@@ -85,6 +114,8 @@ const AdvancedPage = () => {
                     onInfoReceived(response)
                 } catch (error) {
                     console.error('Error fetching information:', error);
+                } finally {
+                    fetchTokens();  // Update tokens after the API call
                 }
             };
             fetchData();
@@ -97,6 +128,8 @@ const AdvancedPage = () => {
                     onHistoryReceived(response)
                 } catch (error) {
                     console.error('Error fetching information:', error);
+                } finally {
+                    fetchTokens();  // Update tokens after the API call
                 }
             };
             fetchData();
@@ -104,6 +137,15 @@ const AdvancedPage = () => {
 
         const handleRenewClick = () => {
             console.log('Renew');
+            const fetchData = async () => {
+                try {
+                    const response = await api.renewExpiration(email);
+                    console.log(response)
+                } catch (error) {
+                    console.error('Error renewing', error);
+                }
+            };
+            fetchData();
         };
 
         const handleReportClick = () => {
@@ -120,7 +162,18 @@ const AdvancedPage = () => {
         };
 
         const handleResetTokenClick = () => {
-            console.log('Reset Token...');
+            console.log('Reset Token');
+            const fetchData = async () => {
+                try {
+                    const response = await api.resetTokens(email);
+                    console.log(response)
+                } catch (error) {
+                    console.error('Error reseting tokens:', error);
+                } finally {
+                    fetchTokens();  // Update tokens after the API call
+                }
+            };
+            fetchData();
         };
 
         const handleRemoveSpamClick = () => {
@@ -139,6 +192,17 @@ const AdvancedPage = () => {
 
         const handleDeleteClick = () => {
             console.log('Delete');
+            const fetchData = async () => {
+                try {
+                    const response = await api.deleteShortUrl(email, url);
+                    console.log(response)
+                } catch (error) {
+                    console.error('Error deleting', error);
+                } finally {
+                    fetchTokens();  // Update tokens after the API call
+                }
+            };
+            fetchData();
         };
 
         return (
