@@ -9,7 +9,7 @@ import * as api from '../api/featureApi';
 
 const AdvancedPage = () => {
     const navigate = useNavigate();
-    const email = localStorage.getItem('userEmail') || 'aj103@rice.edu';
+    const email = localStorage.getItem('userEmail');
     // const email = 'tk57@rice.edu';
     // const email = 'aj103@rice.edu';
     // const tokens = 'XXXX'; // Replace with your logic to get the tokens

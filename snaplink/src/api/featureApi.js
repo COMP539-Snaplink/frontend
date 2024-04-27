@@ -69,7 +69,10 @@ export const resetTokens = async (email) => {
 
 export const deleteShortUrl = async (email, shortUrl) => {
     try {
-        const response = await axiosInstance.delete(`${baseURL}/delete`, { email: email, short_url: shortUrl });
+        const config = {
+            data: { email: email, short_url: shortUrl }
+        };
+        const response = await axiosInstance.delete(`${baseURL}/delete`, config);
         return response.data;
     } catch (error) {
         throw error;
