@@ -274,7 +274,7 @@ const AdvancedPage = () => {
                                 </Tr>
                                 <Tr>
                                     <Td>Expires At</Td>
-                                    <Td style={tdStyle}>{infoData.expire_at || 'N/A'}</Td>
+                                    <Td style={tdStyle}>{infoData.expires_at || 'N/A'}</Td>
                                 </Tr>
                                 <Tr>
                                     <Td>Created At</Td>
